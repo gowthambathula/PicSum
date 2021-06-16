@@ -2,10 +2,22 @@ import React from "react";
 import axios from "axios";
 import ImageHost from "../imageHost/index";
 import Button from "@material-ui/core/Button";
-// import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3)
+  }
+}));
+
 export default function LandingPage(props) {
+  const classes = useStyles();
   const [imgList, newList] = React.useState([]);
   const [page, newPage] = React.useState(1);
   const [open, setOpen] = React.useState(false);
@@ -65,6 +77,15 @@ export default function LandingPage(props) {
           onClose={() => setOpen(false)}
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
+          style={{
+            background: "#FFFFFF",
+            height: "750px",
+            width: "720px",
+            display: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)"
+          }}
         >
           <div>
             <img
