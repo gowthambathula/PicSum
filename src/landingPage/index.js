@@ -3,12 +3,12 @@ import axios from "axios";
 import ImageHost from "../imageHost/index";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+import InfinitScroll from "react-infinite-scroll-component";
 import Modal from "@material-ui/core/Modal";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: 400,
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -37,18 +37,14 @@ export default function LandingPage(props) {
       .catch((err) => console.log(err));
   };
 
-  const handleScroll = () => {
-    const { scrollTop, scrollHeight, clientHeight } = divField.current;
-    console.log(
-      "scrollTop, scrollHeight, clientHeight ",
-      scrollTop,
-      scrollHeight,
-      clientHeight
-    );
-    if (scrollTop + clientHeight === scrollHeight) {
-      // TO SOMETHING HERE
-      apiCall();
-    }
+  const onImageChange = (event) => {
+    console.log("img", event.target.files);
+    event.target.files[0]
+      ? newList([
+          { download_url: URL.createObjectURL(event?.target.files[0]) },
+          ...imgList
+        ])
+      : console.log("error");
   };
 
   const handleOpen = (x) => {
@@ -60,26 +56,42 @@ export default function LandingPage(props) {
   }, []);
 
   return (
-    <div onScroll={(e) => console.log("e", e)}>
-      <div
-        // ref={divField}
-        style={{ display: "flex", flexWrap: "wrap", justifySelf: "auto" }}
-      >
-        {imgList.map((x) => (
-          <span style={{ padding: "5px" }}>
-            <ImageHost id={x} func={handleOpen} />
-          </span>
-        ))}
+    <div>
+      <div>
+        {/* <Button onClick={onImageChange} variant="contained" color="primary">
+          upload Image
+        </Button> */}
+
+        <Button variant="contained" color="primary">
+          <input onClick={onImageChange} type="file" />
+        </Button>
       </div>
+      <InfinitScroll
+        dataLength={imgList.length}
+        next={apiCall}
+        hasMore={true}
+        loader={<h4>Loading ... </h4>}
+      >
+        <div
+          // ref={divField}
+          style={{ display: "flex", flexWrap: "wrap", justifySelf: "auto" }}
+        >
+          {imgList.map((x) => (
+            <span key={x.id} style={{ padding: "5px" }}>
+              <ImageHost id={x} func={handleOpen} />
+            </span>
+          ))}
+        </div>
+      </InfinitScroll>
       <div>
         <Modal
-          open={open}
+          open={!!open}
           onClose={() => setOpen(false)}
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
           style={{
             background: "#FFFFFF",
-            height: "750px",
+            height: "770px",
             width: "720px",
             display: "fixed",
             top: "50%",
@@ -87,7 +99,7 @@ export default function LandingPage(props) {
             transform: "translate(-50%, -50%)"
           }}
         >
-          <div>
+          <div className={classes.paper} style={{ padding: "10px" }}>
             <img
               style={{ height: "700px", width: "700px" }}
               alt={`${open}`}
